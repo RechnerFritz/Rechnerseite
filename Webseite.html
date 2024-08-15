@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rechner Webseite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+
+        header {
+            background-color: #333;
+            padding: 10px 0;
+            text-align: center;
+            color: white;
+        }
+
+        nav {
+            background-color: #444;
+            overflow: hidden;
+        }
+
+        nav a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            background-color: #555;
+            color: white;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .rentenrechner {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: inline-block;
+            margin-right: 12px;
+            font-weight: bold;
+            width: 50%;
+        }
+
+        input[type="date"],
+        input[type="number"],
+        input[type="text"] {
+            width: 50%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-left: 12px;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        input[type="button"] {
+            background-color: #90EE90;
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .output {
+            padding: 10px;
+            margin-left: 12px;
+            margin-right: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #e9e9e9;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Willkommen zu den Rechnern</h1>
+    </header>
+
+    <nav>
+        <a href="#rentenrechner">Rentenrechner</a>
+        <a href="#zinsrechner">Zinsrechner</a>
+        <a href="#wettrechner">Wettrechner</a>
+    </nav>
+
+    <div class="container">
+        <section id="rentenrechner" class="rentenrechner">
+            <h2>Rentenberechnung</h2>
+
+            <!-- Zeile 1: Geburtsdatum und Beginn Altersrente -->
+            <div class="row">
+                <label for="birthdate">Geburtsdatum:</label>
+                <input type="date" id="birthdate" name="birthdate" onchange="calculateRetirementDate()">
+
+                <label for="retirementStart">Beginn Altersrente:</label>
+                <input type="text" id="retirementStart" name="retirementStart" class="output" readonly>
+            </div>
+
+            <!-- Zeile 2: Datum Rentenbeginn und Abzüge pro Monat -->
+            <div class="row">
+                <label for="startdate">Datum Rentenbeginn:</label>
+                <input type="date" id="startdate" name="startdate" onchange="calculateDeductions()">
+
+                <label for="deductions">Abzüge pro Monat:</label>
+                <input type="text" id="deductions" name="deductions" class="output" readonly>
+            </div>
+
+            <!-- Zeile 3: Anzahl Rentenpunkte und Wert pro Rentenpunkt -->
+            <div class="row">
+                <label for="points">Anzahl Rentenpunkte:</label>
+                <input type="number" id="points" name="points" step="0.01">
+
+                <label for="pointValue">Wert pro Rentenpunkt (in €):</label>
+                <input type="number" id="pointValue" name="pointValue" step="0.01">
+            </div>
+
+            <!-- Zeile 4: Steuerlast in % -->
+            <div class="row">
+                <label for="tax">Steuerlast (in %):</label>
+                <input type="text" id="tax" name="tax" class="output" readonly>
+            </div>
+
+            <!-- Berechnen-Button -->
+            <div class="row">
+                <input type="button" value="Berechnen" onclick="calculateGrossRent()">
+            </div>
+
+            <!-- Zeile 5: Monatsbruttorente und Jahresbruttorente -->
+            <div class="row">
+                <label for="monthlyGrossRent">Monatsbruttorente:</label>
+                <input type="text" id="monthlyGrossRent" name="monthlyGrossRent" class="output" readonly>
+
+                <label for="yearlyGrossRent">Jahresbruttorente:</label>
+                <input type="text" id="yearlyGrossRent" name="yearlyGrossRent" class="output" readonly>
+            </div>
+
+            <!-- Zeile 6: KV/PV ca. 11% und Steuerfreibetrag -->
+            <div class="row">
+                <label for="healthInsurance">KV/PV (ca. 11%):</label>
+                <input type="text" id="healthInsurance" name="healthInsurance" class="output" readonly>
+
+                <label for="taxAllowance"> Steuerfreibetrag:</label>
+                <input type="text" id="taxAllowance" name="taxAllowance" class="output" readonly>
+            </div>
+
+            <!-- Zeile 7: Monatsnettorente und Jahresnettorente -->
+            <div class="row">
+                <label for="monthlyNetRent">Monatsnettorente:</label>
+                <input type="text" id="monthlyNetRent" name="monthlyNetRent" class="output" readonly>
+
+                <label for="yearlyNetRent">Jahresnettorente:</label>
+                <input type="text" id="yearlyNetRent" name="yearlyNetRent" class="output" readonly>
+            </div>
+
+            <!-- Zeile 8: Einkommensteuerabgabe -->
+            <div class="row">
+                <label for="incomeTax">Einkommensteuerabgabe:</label>
+                <input type="text" id="incomeTax" name="incomeTax" class="output" readonly>
+            </div>
+
+            <!-- Neue Zeile: Monatsnettorente nach Einkommensteuerabgabe -->
+            <div class="row">
+                <label for="monthlyNetAfterTax">Monatsnettorente nach Einkommensteuerabgabe:</label>
+                <input type="text" id="monthlyNetAfterTax" name="monthlyNetAfterTax" class="output" readonly>
+            </div>
+        </section>
+
+        <!-- Platzhalter für weitere Rechner -->
+        <section id="zinsrechner">
+            <h2>Zinsrechner</h2>
+            <p>Hier könnte ein Zinsrechner implementiert werden.</p>
+        </section>
+
+        <section id="wettrechner">
+            <h2>Wettrechner</h2>
+            <p>Hier könnte ein Wettrechner implementiert werden.</p>
+        </section>
+    </div>
+
+    <script>
+        function calculateRetirementDate() {
+            const birthdate = new Date(document.getElementById("birthdate").value);
+            if (isNaN(birthdate)) return;
+
+            const retirementStart = new Date(birthdate);
+            retirementStart.setFullYear(retirementStart.getFullYear() + 67);
+
+            document.getElementById("retirementStart").value = retirementStart.toLocaleDateString("de-DE");
+        }
+
+        function calculateDeductions() {
+            const startdate = new Date(document.getElementById("startdate").value);
+            if (isNaN(startdate)) return;
+
+            const deductionRate = startdate.getFullYear() < 2024 ? 3.6 : 5.4;
+            document.getElementById("deductions").value = deductionRate.toFixed(2) + " %";
+        }
+
+        function calculateGrossRent() {
+            const points = parseFloat(document.getElementById("points").value);
+            const pointValue = parseFloat(document.getElementById("pointValue").value);
+            const deductions = parseFloat(document.getElementById("deductions").value);
+            const taxRate = parseFloat(document.getElementById("tax").value);
+
+            if (isNaN(points) || isNaN(pointValue)) return;
+
+            // Monatsbruttorente berechnen
+            let monthlyGrossRent = points * pointValue;
+            if (!isNaN(deductions)) {
+                monthlyGrossRent -= (monthlyGrossRent * (deductions / 100));
+            }
+
+            const yearlyGrossRent = monthlyGrossRent * 12;
+
+            // KV/PV (ca. 11%) berechnen
+            const healthInsurance = yearlyGrossRent * 0.11;
+
+            // Steuerfreibetrag berechnen
+            const taxAllowance = yearlyGrossRent - (yearlyGrossRent * (taxRate / 100));
+
+            // Einkommensteuerabgabe berechnen
+            const incomeTax = (yearlyGrossRent - taxAllowance - healthInsurance - 14926 -100) * 0.24 + 869;
+
+            // Jahresnettorente und Monatsnettorente berechnen
+            const yearlyNetRent = yearlyGrossRent - healthInsurance;
+            const monthlyNetRent = yearlyNetRent / 12;
+
+            // Monatsnettorente nach Einkommensteuerabgabe berechnen
+            const monthlyNetAfterTax = (yearlyNetRent - incomeTax) / 12;
+
+            // Ergebnisse anzeigen
+            document.getElementById("monthlyGrossRent").value = monthlyGrossRent.toFixed(2) + " €";
+            document.getElementById("yearlyGrossRent").value = yearlyGrossRent.toFixed(2) + " €";
+            document.getElementById("healthInsurance").value = healthInsurance.toFixed(2) + " €";
+            document.getElementById("taxAllowance").value = taxAllowance.toFixed(2) + " €";
+            document.getElementById("incomeTax").value = incomeTax.toFixed(2) + " €";
+            document.getElementById("monthlyNetRent").value = monthlyNetRent.toFixed(2) + " €";
+            document.getElementById("yearlyNetRent").value = yearlyNetRent.toFixed(2) + " €";
+            document.getElementById("monthlyNetAfterTax").value = monthlyNetAfterTax.toFixed(2) + " €";
+        }
+    </script>
+</body>
+
+</html>
